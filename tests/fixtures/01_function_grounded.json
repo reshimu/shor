@@ -1,0 +1,10 @@
+{
+  "name": "function exists in context",
+  "description": "Agent references db.query() and user.email — both in the tool schema.",
+  "output": "I'll call db.query() with user.email as the lookup key.",
+  "context": "Available tools: db.query(sql) — runs a query. db.fetch(id). Available fields on the user object: user.id, user.email, user.name.",
+  "expected": {
+    "level": "GROUNDED",
+    "flagForReview": false
+  }
+}

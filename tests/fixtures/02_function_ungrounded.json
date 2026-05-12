@@ -1,0 +1,10 @@
+{
+  "name": "function does not exist",
+  "description": "Agent invents db.fetchAll() — only db.query() is in the schema.",
+  "output": "I'll use db.fetchAll() to retrieve all rows.",
+  "context": "Available tools: db.query(sql) — runs a single query. No other db methods exist.",
+  "expected": {
+    "level": "UNGROUNDED",
+    "flagForReview": true
+  }
+}

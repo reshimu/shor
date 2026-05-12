@@ -1,0 +1,11 @@
+{
+  "name": "strict mode rejects substring match",
+  "description": "Output 'user.email' is a substring of 'user.emails' in context. Strict requires token boundary → no match.",
+  "output": "Read the user.email value.",
+  "context": "Each user.emails entry is stored separately.",
+  "options": { "strict": true },
+  "expected": {
+    "level": "UNGROUNDED",
+    "flagForReview": true
+  }
+}

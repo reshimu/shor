@@ -1,0 +1,52 @@
+{
+  "name": "@reshimu/shor",
+  "version": "0.1.0",
+  "description": "Deterministic, non-LLM grounding & hallucination classifier for agent loops.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": ["dist", "README.md", "LICENSE", "SHOR_SPEC.md"],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "keywords": [
+    "llm",
+    "agents",
+    "hallucination",
+    "grounding",
+    "classifier",
+    "ai-safety",
+    "guardrails"
+  ],
+  "author": "Reshimu",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reshimu/shor.git"
+  },
+  "homepage": "https://github.com/reshimu/shor",
+  "bugs": {
+    "url": "https://github.com/reshimu/shor/issues"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@vitest/coverage-v8": "^1.2.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

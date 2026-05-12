@@ -1,0 +1,10 @@
+{
+  "name": "empty output",
+  "description": "Output is empty — INDETERMINATE.",
+  "output": "",
+  "context": "Plenty of context here, but no output to check.",
+  "expected": {
+    "level": "INDETERMINATE",
+    "flagForReview": false
+  }
+}

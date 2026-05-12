@@ -1,0 +1,10 @@
+{
+  "name": "empty context with entities in output",
+  "description": "Output has entities, context is empty → UNGROUNDED.",
+  "output": "Revenue was $4.2M last quarter.",
+  "context": "",
+  "expected": {
+    "level": "UNGROUNDED",
+    "flagForReview": true
+  }
+}

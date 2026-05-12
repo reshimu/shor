@@ -1,0 +1,10 @@
+{
+  "name": "inferred date — partial grounding",
+  "description": "Output has 3 entities: 2 are in context, 1 is invented (a hallucinated dollar figure).",
+  "output": "John Smith filed on 2024-01-15 for $4.2M.",
+  "context": "John Smith filed on Jan 15, 2024 for an undisclosed sum.",
+  "expected": {
+    "level": "PARTIAL",
+    "flagForReview": true
+  }
+}

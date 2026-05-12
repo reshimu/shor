@@ -1,0 +1,11 @@
+{
+  "name": "lenient mode accepts substring match",
+  "description": "Same output/context as 12a but with strict=false → substring match succeeds.",
+  "output": "Read the user.email value.",
+  "context": "Each user.emails entry is stored separately.",
+  "options": { "strict": false },
+  "expected": {
+    "level": "GROUNDED",
+    "flagForReview": false
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "verbatim quote grounded",
+  "description": "Agent quotes a phrase that appears verbatim in context.",
+  "output": "She said \"we are going to win this quarter\".",
+  "context": "During the all-hands the CEO said \"we are going to win this quarter\" and everyone applauded.",
+  "expected": {
+    "level": "GROUNDED",
+    "flagForReview": false
+  }
+}

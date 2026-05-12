@@ -1,0 +1,186 @@
+{
+  "01_function_grounded.json": {
+    "level": "GROUNDED",
+    "score": 1,
+    "flagForReview": false,
+    "entityCount": 2,
+    "foundCount": 2,
+    "entities": [
+      {
+        "text": "db.query()",
+        "type": "identifier",
+        "found": true
+      },
+      {
+        "text": "user.email",
+        "type": "identifier",
+        "found": true
+      }
+    ]
+  },
+  "02_function_ungrounded.json": {
+    "level": "UNGROUNDED",
+    "score": 0,
+    "flagForReview": true,
+    "entityCount": 1,
+    "foundCount": 0,
+    "entities": [
+      {
+        "text": "db.fetchAll()",
+        "type": "identifier",
+        "found": false
+      }
+    ]
+  },
+  "03_paraphrase_indeterminate.json": {
+    "level": "INDETERMINATE",
+    "score": 0,
+    "flagForReview": false,
+    "entityCount": 0,
+    "foundCount": 0,
+    "entities": []
+  },
+  "04_hallucinated_dollar.json": {
+    "level": "UNGROUNDED",
+    "score": 0,
+    "flagForReview": true,
+    "entityCount": 1,
+    "foundCount": 0,
+    "entities": [
+      {
+        "text": "$7.3M",
+        "type": "number",
+        "found": false
+      }
+    ]
+  },
+  "05_inferred_date_partial.json": {
+    "level": "PARTIAL",
+    "score": 0.5,
+    "flagForReview": true,
+    "entityCount": 2,
+    "foundCount": 1,
+    "entities": [
+      {
+        "text": "2024-01-15",
+        "type": "date",
+        "found": true
+      },
+      {
+        "text": "$4.2M",
+        "type": "number",
+        "found": false
+      }
+    ]
+  },
+  "06_verbatim_quote_grounded.json": {
+    "level": "GROUNDED",
+    "score": 1,
+    "flagForReview": false,
+    "entityCount": 1,
+    "foundCount": 1,
+    "entities": [
+      {
+        "text": "\"we are going to win this quarter\"",
+        "type": "quoted_string",
+        "found": true
+      }
+    ]
+  },
+  "07_misattribution_partial.json": {
+    "level": "PARTIAL",
+    "score": 0.5,
+    "flagForReview": true,
+    "entityCount": 2,
+    "foundCount": 1,
+    "entities": [
+      {
+        "text": "the SEC report",
+        "type": "citation",
+        "found": true
+      },
+      {
+        "text": "$9.9M",
+        "type": "number",
+        "found": false
+      }
+    ]
+  },
+  "08_empty_output.json": {
+    "level": "INDETERMINATE",
+    "score": 0,
+    "flagForReview": false,
+    "entityCount": 0,
+    "foundCount": 0,
+    "entities": []
+  },
+  "09_empty_context.json": {
+    "level": "UNGROUNDED",
+    "score": 0,
+    "flagForReview": true,
+    "entityCount": 1,
+    "foundCount": 0,
+    "entities": [
+      {
+        "text": "$4.2M",
+        "type": "number",
+        "found": false
+      }
+    ]
+  },
+  "10_long_context.json": {
+    "level": "GROUNDED",
+    "score": 1,
+    "flagForReview": false,
+    "entityCount": 2,
+    "foundCount": 2,
+    "entities": [
+      {
+        "text": "$4.2M",
+        "type": "number",
+        "found": true
+      },
+      {
+        "text": "47 customers",
+        "type": "number",
+        "found": true
+      }
+    ]
+  },
+  "11_stopwords_only.json": {
+    "level": "INDETERMINATE",
+    "score": 0,
+    "flagForReview": false,
+    "entityCount": 0,
+    "foundCount": 0,
+    "entities": []
+  },
+  "12a_strict_rejects.json": {
+    "level": "UNGROUNDED",
+    "score": 0,
+    "flagForReview": true,
+    "entityCount": 1,
+    "foundCount": 0,
+    "entities": [
+      {
+        "text": "user.email",
+        "type": "identifier",
+        "found": false
+      }
+    ]
+  },
+  "12b_lenient_accepts.json": {
+    "level": "GROUNDED",
+    "score": 1,
+    "flagForReview": false,
+    "entityCount": 1,
+    "foundCount": 1,
+    "entities": [
+      {
+        "text": "user.email",
+        "type": "identifier",
+        "found": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "misattribution",
+  "description": "Citation points at a real source, but the cited fact is invented.",
+  "output": "According to the SEC report, revenue was $9.9M last quarter.",
+  "context": "The SEC report covered general market conditions and tax compliance topics. No specific revenue figures were disclosed.",
+  "expected": {
+    "level": "PARTIAL",
+    "flagForReview": true
+  }
+}

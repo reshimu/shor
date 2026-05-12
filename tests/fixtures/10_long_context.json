@@ -1,0 +1,14 @@
+{
+  "name": "long context still classifies correctly",
+  "description": "Context is moderately long (~5k chars); performance test does the full 50k-token version separately.",
+  "output": "Revenue was $4.2M and 47 customers signed up.",
+  "context_synthesize": {
+    "seed": "Various unrelated facts and noise sentences. The numbers and figures discussed here are placeholders. Teams reported progress in different areas. ",
+    "repeat": 30,
+    "embed": "Quarterly revenue of $4.2M was reported. 47 customers signed up this period."
+  },
+  "expected": {
+    "level": "GROUNDED",
+    "flagForReview": false
+  }
+}

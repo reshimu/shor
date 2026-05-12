@@ -1,0 +1,10 @@
+{
+  "name": "paraphrase with no specific entities",
+  "description": "Agent restates the context in generic words. No numbers, IDs, or names to check.",
+  "output": "the user wants to know more about how it works",
+  "context": "User asked about technical details of the implementation.",
+  "expected": {
+    "level": "INDETERMINATE",
+    "flagForReview": false
+  }
+}

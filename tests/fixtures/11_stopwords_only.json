@@ -1,0 +1,10 @@
+{
+  "name": "output entirely stopwords",
+  "description": "Output is all stopwords / non-extractable words → INDETERMINATE.",
+  "output": "it is and they are for the with by as",
+  "context": "anything anything anything",
+  "expected": {
+    "level": "INDETERMINATE",
+    "flagForReview": false
+  }
+}

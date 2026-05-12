@@ -1,0 +1,10 @@
+{
+  "name": "hallucinated dollar figure",
+  "description": "Agent invents $7.3M which doesn't appear anywhere in context.",
+  "output": "The deal closed at $7.3M.",
+  "context": "The deal closed for an undisclosed amount. No financial figures were shared.",
+  "expected": {
+    "level": "UNGROUNDED",
+    "flagForReview": true
+  }
+}
