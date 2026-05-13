@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 from collections.abc import Callable, Iterable, Sequence
+from typing import cast
 
 from .extractor import extract
 from .lookup import LookupConstraints, build_normalized_context, find_all
@@ -42,9 +43,8 @@ def classify(
     if entity_types is None or list(entity_types) == ["all"]:
         type_filter = None
     else:
-        type_filter = frozenset(
-            t for t in entity_types if t in _VALID_ENTITY_TYPES
-        )  # type: ignore[arg-type]
+        valid = [t for t in entity_types if t in _VALID_ENTITY_TYPES]
+        type_filter = frozenset(cast("list[EntityType]", valid))
 
     sw: frozenset[str]
     if stopwords is not None:
