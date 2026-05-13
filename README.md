@@ -1,11 +1,13 @@
-# SHOR — Grounding & Hallucination Classifier
 
 > A deterministic, non-LLM classifier that flags ungrounded entities in agent outputs before they reach a tool call or a user.
 
-[![npm](https://img.shields.io/npm/v/@reshimu/shor.svg)](https://www.npmjs.com/package/@reshimu/shor)
-[![PyPI](https://img.shields.io/pypi/v/reshimu-shor.svg)](https://pypi.org/project/reshimu-shor/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![CI](https://img.shields.io/github/actions/workflow/status/reshimu/shor/ci.yml?branch=main)](https://github.com/reshimu/shor/actions)
+[
+# SHOR — Grounding & Hallucination Classifier
+
+[![npm version](https://img.shields.io/npm/v/@reshimu/shor.svg)](https://www.npmjs.com/package/@reshimu/shor)
+[![PyPI version](https://img.shields.io/pypi/v/reshimu-shor.svg)](https://pypi.org/project/reshimu-shor/)
+[![npm downloads](https://img.shields.io/npm/dm/@reshimu/shor.svg)](https://www.npmjs.com/package/@reshimu/shor)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 SHOR sits between an agent's stated output and the world it is about to act on. Given the agent's text and the context that agent operated over — tool schemas, retrieved documents, conversation history — SHOR extracts every addressable entity in the output (numbers, identifiers, dates, quoted strings, citations, URLs, proper nouns) and verifies that each one actually appears in the context. The result is a four-level classification you can gate on. Sub-50ms on a 50k-token context, zero runtime dependencies, no LLM in the loop.
 
