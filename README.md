@@ -1,21 +1,40 @@
+# SHOR — Grounding & Hallucination Classifier
 
 > A deterministic, non-LLM classifier that flags ungrounded entities in agent outputs before they reach a tool call or a user.
 
-[
-# SHOR — Grounding & Hallucination Classifier
-
-[![npm version](https://img.shields.io/npm/v/@reshimu/shor.svg)](https://www.npmjs.com/package/@reshimu/shor)
-[![PyPI version](https://img.shields.io/pypi/v/reshimu-shor.svg)](https://pypi.org/project/reshimu-shor/)
-[![npm downloads](https://img.shields.io/npm/dm/@reshimu/shor.svg)](https://www.npmjs.com/package/@reshimu/shor)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![npm](https://img.shields.io/npm/v/@reshimu/shor.svg)](https://www.npmjs.com/package/@reshimu/shor)
+[![PyPI](https://img.shields.io/pypi/v/reshimu-shor.svg)](https://pypi.org/project/reshimu-shor/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/reshimu/shor/blob/main/LICENSE)
+[![CI](https://img.shields.io/github/actions/workflow/status/reshimu/shor/ci.yml?branch=main)](https://github.com/reshimu/shor/actions)
 
 SHOR sits between an agent's stated output and the world it is about to act on. Given the agent's text and the context that agent operated over — tool schemas, retrieved documents, conversation history — SHOR extracts every addressable entity in the output (numbers, identifiers, dates, quoted strings, citations, URLs, proper nouns) and verifies that each one actually appears in the context. The result is a four-level classification you can gate on. Sub-50ms on a 50k-token context, zero runtime dependencies, no LLM in the loop.
 
 ---
 
+## Contents
+
+- [Why SHOR](#why-shor)
+- [Install](#install)
+- [Quick start](#quick-start)
+- [Performance](#performance)
+- [Classification levels](#classification-levels)
+- [What SHOR catches / What it does not](#what-shor-catches--what-it-does-not)
+- [How each entity type behaves](#how-each-entity-type-behaves)
+- [The no-LLM principle](#the-no-llm-principle)
+- [API reference](#api-reference)
+- [Integration examples](#integration-examples)
+- [Comparison to alternatives](#comparison-to-alternatives)
+- [FAQ](#faq)
+- [Known limitations and edge cases](#known-limitations-and-edge-cases)
+- [Where this fits in Atzmut OS](#where-this-fits-in-atzmut-os)
+- [Contributing & roadmap](#contributing--roadmap)
+- [License](#license)
+
+---
+
 ## Why SHOR
 
-The dominant failure mode in production agent loops is not jailbreaks or refusals — it is grounded-looking fabrication. The agent confidently states "according to the SEC filing, Q3 revenue was $4.2M," and the user, or the next tool call, takes that as the input to a real action. The figure was invented. The model had no reason to know it. The wrapper that just generated the call had no opinion on whether the call was justified by the context it had seen, and it shipped anyway. We wrote about [the structural shape of this problem](https://reshimu.ai/blog/the-irreversible-action-problem.html) — the cost of unverified outputs scales not with the model's accuracy but with the irreversibility of the actions that consume them. The model alignment work doesn't reach that scale; the validator layer has to.
+The dominant failure mode in production agent loops is not jailbreaks or refusals — it is grounded-looking fabrication. The agent confidently states "according to the SEC filing, Q3 revenue was $4.2M," and the user, or the next tool call, takes that as the input to a real action. The figure was invented. The cost of unverified outputs scales not with the model's accuracy but with the irreversibility of the actions that consume them, which we've [argued at length elsewhere](https://reshimu.ai/blog/the-irreversible-action-problem.html). Model-side alignment work doesn't reach that scale; the validator layer has to.
 
 SHOR's wedge is narrow on purpose: deterministic, entity-level grounding. It does not read the output for meaning, does not ask "is this fact true," does not call another model. It pulls out the parts of the output that point at something specific — a dollar figure, a function name, a date, a quoted phrase, a cited source — and checks whether those literal tokens occur in the context the agent was given. When they do not, you have a hard signal: the agent has produced an entity it had no basis for. The broader argument for why this layer needs to exist alongside the model, not inside it, is in [Bearers of the Throne](https://reshimu.ai/depth/bearers-of-the-throne.html).
 
@@ -39,7 +58,7 @@ Both packages have **zero runtime dependencies**. The TypeScript build is a sing
 
 ### TypeScript
 
-```ts
+```typescript
 import { classify } from '@reshimu/shor'
 
 const result = classify({
@@ -55,7 +74,7 @@ console.log(result.explanation)   // 'All extracted entities verified in context
 
 Same output, smaller context — one entity missing:
 
-```ts
+```typescript
 const result = classify({
   output: 'Q3 revenue was $4.2M from 47 customers.',
   context: 'Q3 numbers: 47 customers signed up, but revenue was not disclosed.',
@@ -119,7 +138,7 @@ The TypeScript and Python implementations are functionally identical. A cross-la
 Measured on a 200,000-character context (~50k tokens) on a 2024 M-series laptop, single-threaded, Node 20:
 
 | Percentile | Latency |
-|---|---|
+| --- | --- |
 | p50 | ~20 ms |
 | p99 | ~34 ms |
 
@@ -134,7 +153,7 @@ Throughput translates directly. At p99 = 34 ms, a single thread evaluates ~30 tr
 ## Classification levels
 
 | Level | When | Recommended action |
-|---|---|---|
+| --- | --- | --- |
 | `GROUNDED` | Every extracted entity verified in context. | Proceed. |
 | `PARTIAL` | Some entities verified, others not. | Block the action, surface the unverified entities to a human, or have the agent retry with explicit citations. |
 | `UNGROUNDED` | No extracted entities verified. | Block. The output as a whole is unsupported. |
@@ -151,15 +170,15 @@ Throughput translates directly. At p99 = 34 ms, a single thread evaluates ~30 tr
 These limits are features. Precise tools that know their scope beat fuzzy tools that pretend to do everything.
 
 | SHOR catches | SHOR does not catch |
-|---|---|
+| --- | --- |
 | Fabricated specific values — dollar figures, percentages, counts, dates that do not appear in context. | Paraphrased hallucinations — the output rephrases a fabrication so no specific entity is matchable. |
 | Invented function and method names — `db.fetchAll()` when the tool schema only defines `db.query()`. | Inferential overreach — the output extends a true premise to an unsupported conclusion using only words that exist in context. |
 | Misquoted strings — quoted text that does not appear verbatim in any source. | Tone, style, sentiment, or values issues. |
 | Misattributed citations — "according to X" where X exists in context but says nothing of the kind. (The citation entity resolves true; the cited *content* becomes its own entities and is graded independently.) | Coreference — "he said the deal closed at $X" without resolving who "he" is. |
 | Referenced objects, files, or paths that were never in context — `src/lib/util.ts` when no such file appears anywhere upstream. | Mesa-optimization, deceptive alignment, or other capability-level risks. |
 | Hallucinated proper nouns — invented names of people, products, places that appear in the output but not the context. | Cross-language matching — an English claim against a Spanish source. |
-| | Semantic equivalents — `Q3` does not match `third quarter`; `$4.2M` does not match `four point two million dollars`. The number-expansion path is digit-only by design. |
-| | A replacement for eval harnesses or red-teaming. SHOR is a runtime gate, not an alignment evaluation. |
+|  | Semantic equivalents — `Q3` does not match `third quarter`; `$4.2M` does not match `four point two million dollars`. The number-expansion path is digit-only by design. |
+|  | A replacement for eval harnesses or red-teaming. SHOR is a runtime gate, not an alignment evaluation. |
 
 The "does not catch" column matters because precision without honesty about scope makes the tool worse, not better. If you ship SHOR thinking it catches paraphrased fabrication, you will get bitten. It catches the things it can catch with high precision and ignores the rest.
 
@@ -173,7 +192,7 @@ The seven entity types have different extraction rules and different normalizati
 
 Catches: integers, decimals, currency, percentages, numbers with explicit units.
 
-```ts
+```typescript
 classify({
   output: 'Revenue was $4.2M, growth of 47%, from 1,234 customers.',
   context: 'Q3 had $4.2M in revenue, 47% growth, 1,234 customers signed up.',
@@ -186,7 +205,7 @@ Normalization generates multiple forms — `$4.2M` is checked as both the litera
 
 Catches: ISO dates, named months, quarters, fiscal years, relative durations.
 
-```ts
+```typescript
 classify({
   output: 'Filed on January 15, 2024.',
   context: 'The 2024-01-15 filing was completed.',
@@ -199,7 +218,7 @@ Normalization is bidirectional between ISO (`2024-01-15`) and written forms (`Ja
 
 Catches: dotted access, function calls, snake_case, camelCase, paths, bracket access, generic syntax, template interpolation.
 
-```ts
+```typescript
 classify({
   output: 'Set user.email = db.query("SELECT id").id',
   context: 'Available fields: user.id, user.email. Available methods: db.query(sql).',
@@ -212,7 +231,7 @@ Function-call forms are doubly normalized: `db.query()` checks against both the 
 
 Catches: anything inside matched `"..."`, `'...'`, or `` `...` ``.
 
-```ts
+```typescript
 classify({
   output: 'The CEO said "we are going to win this quarter".',
   context: 'In the meeting the CEO said "we are going to win this quarter".',
@@ -225,7 +244,7 @@ Apostrophes inside contractions (`I'll`, `don't`, `it's`) are **not** treated as
 
 Catches: 8 phrases (`according to`, `per the`, `as stated in`, `from the`, `the report says`, `the document mentions`, `they said`, `you said`), each followed by a trailing noun phrase of up to 6 tokens.
 
-```ts
+```typescript
 classify({
   output: 'According to the SEC filing, revenue was $4.2M.',
   context: 'The SEC filing covered Q3 results.',
@@ -238,7 +257,7 @@ The citation entity is the *trailing source* (`the SEC filing`), not the cited c
 
 Catches: protocol URLs (`http://`, `https://`) and bare-domain forms with either a path or a known TLD.
 
-```ts
+```typescript
 classify({
   output: 'See https://example.com/docs for the API spec.',
   context: 'The docs live at https://example.com/docs.',
@@ -251,7 +270,7 @@ Bare domains (no `http://`) require either a path component (`example.com/docs`)
 
 Catches: multi-word capitalized phrases not at sentence start, plus single capitalized words that appear ≥ 2 times in the output.
 
-```ts
+```typescript
 classify({
   output: 'I met New York City visitors last week. Alice and Bob were there. Alice was on time.',
   context: 'New York City delegates met with Alice and Bob.',
@@ -276,7 +295,7 @@ The price is scope. SHOR cannot catch paraphrased hallucinations. It cannot catc
 
 ### TypeScript
 
-```ts
+```typescript
 import { classify } from '@reshimu/shor'
 
 function classify(input: ClassifyInput): ClassifyResult
@@ -386,6 +405,7 @@ There is no per-constraint toggle in v0; all three apply when `strict: true`.
 **`score`** — Exact float `n_found / n_total` over entities that passed the `entityTypes` filter and dedup. `0` for `INDETERMINATE`. Use this if you want to compare across many calls or trend over time; do not threshold it for a binary gate (use `level` for that).
 
 **`entities`** — The full per-entity ledger. Each entry tells you:
+
 - `text` — the literal span as it appeared in the output
 - `normalized` — the form actually used for lookup (lowercased, whitespace-collapsed, etc.)
 - `type` — which entity type the extractor assigned
@@ -402,11 +422,13 @@ Use this when you want to surface the specific unverified claims to a human or t
 
 ## Integration examples
 
+Four shapes we've seen work. Each is self-contained — read the one that matches your loop.
+
 ### 1. Insert SHOR between a planning agent and a tool call
 
 A common shape: a planning agent emits text describing the tool call it wants to make, then a runner parses the text into structured arguments and executes. The text is the unstructured surface; the structured call is what actually runs. SHOR sits between them.
 
-```ts
+```typescript
 import { classify } from '@reshimu/shor'
 
 interface ToolSchema { name: string; signature: string; description: string }
@@ -449,7 +471,7 @@ async function planAndAct(
 
 On a plan like `"I'll call db.fetchAll() to load every row"` against a tool schema that only defines `db.query(sql)` and `db.count(table)`, SHOR returns:
 
-```
+```text
 level: 'UNGROUNDED'
 score: 0
 flagForReview: true
@@ -506,7 +528,7 @@ The `INDETERMINATE` case here is important and easy to get wrong. A generic answ
 
 For offline evaluation across many traces, SHOR's sub-50ms throughput means you can run it over thousands of traces in seconds, then aggregate.
 
-```ts
+```typescript
 import { classify } from '@reshimu/shor'
 import { readFileSync, writeFileSync } from 'node:fs'
 
@@ -556,7 +578,7 @@ For evals that genuinely need to grade *paraphrased* claims, pair SHOR with an L
 
 SHOR answers "is this output grounded?" NESHER answers "is the action this output would trigger reversible?" Either one in isolation is incomplete: a grounded output that triggers a destructive irreversible operation should still pause for review; an ungrounded output that triggers a read-only query is less urgent. The two compose into a runtime gate that reflects both axes.
 
-```ts
+```typescript
 import { classify as classifyGrounding } from '@reshimu/shor'
 import { classify as classifyIrreversibility } from '@reshimu/nesher'
 
@@ -608,7 +630,7 @@ The decision matrix is yours to tune. The point is that you have two orthogonal 
 A few common patterns for catching agent fabrication, and where each sits next to SHOR.
 
 | Approach | What it catches | Latency | Determinism | Where to use |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | **SHOR** (this library) | Fabricated entities — numbers, names, identifiers, dates, quoted strings | <50 ms p99 | Deterministic, auditable | Runtime gating in front of tool calls. Pre-display checks on RAG output. |
 | **LLM-as-judge** (same model) | In principle, anything. In practice, biased toward justifying the original output. | 1–5 s per call | Stochastic | Avoid. Self-evaluation is structurally compromised. |
 | **LLM-as-judge** (different family) | Paraphrased claims, semantic mismatches | 1–5 s per call | Stochastic | Batch evals where you've already filtered with SHOR; not for runtime gating. |
@@ -729,7 +751,7 @@ Major version bumps will be reserved for changes that meaningfully alter classif
 
 SHOR is pure-function code with no network access, no filesystem access, no `eval`, no dynamic code generation. The TS bundle and the Python package each have zero runtime dependencies, which means zero transitive supply-chain surface. The only "untrusted input" SHOR processes is the `output` and `context` strings the caller provides; these are operated on as opaque text and never executed, deserialized, or interpreted.
 
-If you find a security issue that requires a private disclosure path, email security@reshimu.ai. Standard public issues are fine on the GitHub tracker. The threat model is intentionally minimal — there is almost no attack surface — but we treat it seriously because SHOR is a safety component, and a bug in a safety component is a bug in the safety guarantee.
+If you find a security issue that requires a private disclosure path, email <security@reshimu.ai>. Standard public issues are fine on the GitHub tracker. The threat model is intentionally minimal — there is almost no attack surface — but we treat it seriously because SHOR is a safety component, and a bug in a safety component is a bug in the safety guarantee.
 
 ### Development
 
@@ -760,7 +782,7 @@ PRs should keep both the TypeScript and Python implementations in sync. The cros
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+MIT. See [LICENSE](https://github.com/reshimu/shor/blob/main/LICENSE).
 
 ---
 
