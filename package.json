@@ -1,6 +1,6 @@
 {
   "name": "@reshimu/shor",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Deterministic, non-LLM grounding & hallucination classifier for agent loops.",
   "type": "module",
   "main": "./dist/index.js",
